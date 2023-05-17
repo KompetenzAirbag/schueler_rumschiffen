@@ -11,9 +11,10 @@ import java.security.MessageDigest; //umbedingt knak fragen
  * @author
  */
 
-public class anmeldung extends JFrame {
+public class Anmeldung extends JFrame {
     // Anfang Attribute
-    private DBManagerSQLite myDBManager = new DBManagerSQLite("schule_gag"); //Datenbank wird geladen
+    private DBManagerSQLite myDBManager; //Datenbank wird geladen
+    private static Benutzeroberflaeche ui;
     private JButton bAnmelden = new JButton(); //Anmeldebutton
     private JButton bRegistrieren = new JButton(); //Registrierbutton
     private JTextField tfEmail = new JTextField(); //E-Mail-Eingabe
@@ -21,18 +22,20 @@ public class anmeldung extends JFrame {
     private JPasswordField tfPasswort = new JPasswordField(); //Password-Eingabe
     private JLabel lBereits_registriert = new JLabel(); //Ob der Nutzer schon ein Konto hat
     private JLabel lFehlerdisplay = new JLabel(); //Zeigt Fehler wie "Benutzername bereits vergeben!" an
+    private JLabel lIstSchueler = new JLabel(); //Ob der Anzumeldende ein Schüler ist (benötigten Daten werden aus Datenbank bezogen)
     boolean bereits_konto = false; //wichtig, um eine "Flip-Flop"-Logik beim Wechsel von Registrieren/Anmelden zu haben
     //Debug/Dev-option
     boolean zeige_warnungen_an = false;
     boolean zeige_fehler_an = true;
     // Ende Attribute
 
-    public anmeldung() {
+    public Anmeldung(DBManagerSQLite Datenbank) {
         // Frame-Initialisierung
         super();
+        myDBManager = Datenbank;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         int frameWidth = 512;
-        int frameHeight = 800;
+        int frameHeight = 400;
         setSize(frameWidth, frameHeight);
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (d.width - getSize().width) / 2;
@@ -42,9 +45,10 @@ public class anmeldung extends JFrame {
         setResizable(false);
         Container cp = getContentPane();
         cp.setLayout(null);
+        cp.setFocusCycleRoot(true);
         // Anfang Komponenten
 
-        bAnmelden.setBounds(154, 586, 179, 33);
+        bAnmelden.setBounds(154, 306, 179, 33);
         bAnmelden.setText("Anmelden");
         bAnmelden.setMargin(new Insets(2, 2, 2, 2));
         bAnmelden.addActionListener(new ActionListener() {
@@ -54,7 +58,7 @@ public class anmeldung extends JFrame {
         });
         bAnmelden.show(false);
         cp.add(bAnmelden);
-        bRegistrieren.setBounds(154, 586, 179, 33);
+        bRegistrieren.setBounds(154, 306, 179, 33);
         bRegistrieren.setText("Registrieren");
         bRegistrieren.setMargin(new Insets(2, 2, 2, 2));
         bRegistrieren.addActionListener(new ActionListener() {
@@ -63,7 +67,7 @@ public class anmeldung extends JFrame {
             }
         });
         cp.add(bRegistrieren);
-        tfBenutzername.setBounds(95, 313, 302, 20);
+        tfBenutzername.setBounds(95, 83, 302, 20);
         tfBenutzername.setText("Benutzername");
         tfBenutzername.setForeground(new Color(128,128,128));
         tfBenutzername.setFont(new Font("Serif", Font.ITALIC, 14));
@@ -87,7 +91,7 @@ public class anmeldung extends JFrame {
             }
         });
         cp.add(tfBenutzername);
-        tfEmail.setBounds(95, 364, 302, 20);
+        tfEmail.setBounds(95, 134, 302, 20);
         tfEmail.setText("E-Mail");
         tfEmail.setForeground(new Color(128,128,128));
         tfEmail.setFont(new Font("Serif", Font.ITALIC, 14));
@@ -118,7 +122,7 @@ public class anmeldung extends JFrame {
             }
         });
         cp.add(tfEmail);
-        tfPasswort.setBounds(95, 415, 302, 20);
+        tfPasswort.setBounds(95, 185, 302, 20);
         tfPasswort.setText("Passwort");
         tfPasswort.setForeground(new Color(128,128,128));
         tfPasswort.setFont(new Font("Serif", Font.ITALIC, 14));
@@ -145,7 +149,7 @@ public class anmeldung extends JFrame {
             }
         });
         cp.add(tfPasswort);
-        lBereits_registriert.setBounds(95, 450, 302, 20);
+        lBereits_registriert.setBounds(95, 220, 302, 20);
         lBereits_registriert.setHorizontalAlignment(SwingConstants.CENTER);
         lBereits_registriert.setText("Bereits ein Konto?");
         lBereits_registriert.addMouseListener(new MouseListener() {
@@ -189,7 +193,37 @@ public class anmeldung extends JFrame {
             }
         });
         cp.add(lBereits_registriert);
-        lFehlerdisplay.setBounds(95, 501, 302, 50);
+        lIstSchueler.setBounds(95, 205, 302, 20);
+        lIstSchueler.setHorizontalAlignment(SwingConstants.CENTER);
+        lIstSchueler.setText("Schüler?");//TODO
+        lIstSchueler.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+        cp.add(lIstSchueler);
+        lFehlerdisplay.setBounds(95, 260, 302, 50);
         lFehlerdisplay.setHorizontalAlignment(SwingConstants.CENTER);
         lFehlerdisplay.setText("");
         lFehlerdisplay.show(false);
@@ -197,7 +231,7 @@ public class anmeldung extends JFrame {
         // Ende Komponenten
 
         setVisible(true);
-    } // end of public schueler_rumschiffen
+    } // end of public Anmeldung
 
     // Anfang Methoden
 
@@ -216,6 +250,9 @@ public class anmeldung extends JFrame {
             if (passwort.equals(db_passwort)) {
                 //Ab dieser Stelle war die Anmeldung erfolgreich
                 zeige_fehler("Anmeldung erfolgreich!");
+                ui = new Benutzeroberflaeche();
+                dispose();
+                ui.angemeldet();
             } else {
                 zeige_fehler("Anmeldedaten falsch!");
             }
@@ -240,6 +277,10 @@ public class anmeldung extends JFrame {
             myDBManager.datensatzEinfuegen(sql);
             //Ab dieser Stelle war die Registrierung erfolgreich
             zeige_fehler("Registrierung erfolgreich!");
+            ui = new Benutzeroberflaeche();
+            ui.show(false);
+            Registrierung reg = new Registrierung(ui);
+            dispose();
         } else {
             zeige_fehler("<html>Benutzername oder E-Mail-Adresse bereits vergeben!<br/>Bitte versuche einen Anderen oder melde dich an!</html>");
         }
