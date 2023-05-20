@@ -195,11 +195,141 @@ public class Anmeldung extends JFrame {
         cp.add(lBereits_registriert);
         lIstSchueler.setBounds(95, 205, 302, 20);
         lIstSchueler.setHorizontalAlignment(SwingConstants.CENTER);
-        lIstSchueler.setText("Schüler?");//TODO
+        lIstSchueler.setText("Schüler?");
         lIstSchueler.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                JFrame istschueler = new JFrame(); //neues Fenster für Eingabe der Schüler-Suchdaten
+                //Attribte des JFrames
+                istschueler.setTitle("Schüleranmeldung");
+                istschueler.setResizable(false);
+                istschueler.setLayout(null);
+                istschueler.setSize(300, 300);
+                istschueler.setLocation(x+100, y+50); //zentriert das Fenster
+                istschueler.show(true);
 
+                //Komponente des Frames
+                //Vorname
+                JTextField tfVorname = new JTextField();
+                tfVorname.setBounds(25, 20, 120, 20);
+                tfVorname.setHorizontalAlignment(SwingConstants.CENTER);
+                tfVorname.setText("Vorname");
+                tfVorname.setForeground(new Color(128,128,128));
+                tfVorname.setFont(new Font("Serif", Font.ITALIC, 14));
+                tfVorname.addFocusListener(new FocusListener() {
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        if (tfVorname.getText().equals("Vorname")) {
+                            tfVorname.setText("");
+                            tfVorname.setForeground(new Color(0,0,0));
+                            tfVorname.setFont(new Font("Serif", Font.PLAIN, 14));
+                        }
+                    }
+
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        if (tfVorname.getText().equals("")) {
+                            tfVorname.setText("Vorname");
+                            tfVorname.setForeground(new Color(128,128,128));
+                            tfVorname.setFont(new Font("Serif", Font.ITALIC, 14));
+                        }
+                    }
+                });
+                istschueler.add(tfVorname);
+                //Nachname
+                JTextField tfNachname = new JTextField();
+                tfNachname.setBounds(155, 20, 120, 20);
+                tfNachname.setHorizontalAlignment(SwingConstants.CENTER);
+                tfNachname.setText("Nachname");
+                tfNachname.setForeground(new Color(128,128,128));
+                tfNachname.setFont(new Font("Serif", Font.ITALIC, 14));
+                tfNachname.addFocusListener(new FocusListener() {
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        if (tfNachname.getText().equals("Nachname")) {
+                            tfNachname.setText("");
+                            tfNachname.setForeground(new Color(0,0,0));
+                            tfNachname.setFont(new Font("Serif", Font.PLAIN, 14));
+                        }
+                    }
+
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        if (tfNachname.getText().equals("")) {
+                            tfNachname.setText("Nachname");
+                            tfNachname.setForeground(new Color(128,128,128));
+                            tfNachname.setFont(new Font("Serif", Font.ITALIC, 14));
+                        }
+                    }
+                });
+                istschueler.add(tfNachname);
+                //Geburtstag
+                JTextField tfGeburtstag = new JTextField();
+                tfGeburtstag.setBounds(20, 50, 240, 20);
+                tfGeburtstag.setHorizontalAlignment(SwingConstants.CENTER);
+                tfGeburtstag.setText("Geburtstag yyyy-mm-tt");
+                tfGeburtstag.setForeground(new Color(128,128,128));
+                tfGeburtstag.setFont(new Font("Serif", Font.ITALIC, 14));
+                tfGeburtstag.addFocusListener(new FocusListener() {
+                    @Override
+                    public void focusGained(FocusEvent e) {
+                        if (tfGeburtstag.getText().equals("Geburtstag yyyy-mm-tt")) {
+                            tfGeburtstag.setText("");
+                            tfGeburtstag.setForeground(new Color(0,0,0));
+                            tfGeburtstag.setFont(new Font("Serif", Font.PLAIN, 14));
+                        }
+                    }
+
+                    @Override
+                    public void focusLost(FocusEvent e) {
+                        if (tfGeburtstag.getText().equals("")) {
+                            tfGeburtstag.setText("Geburtstag yyyy-mm-tt");
+                            tfGeburtstag.setForeground(new Color(128,128,128));
+                            tfGeburtstag.setFont(new Font("Serif", Font.ITALIC, 14));
+                        }
+                    }
+                });
+                istschueler.add(tfGeburtstag);
+                //Fehlerdisplay
+                JLabel lFehler = new JLabel();
+                lFehler.setBounds(30, 110, 240, 20);
+                lFehler.setText("höhö ich bin ein fehler");
+                //lFehler.show(false);
+                istschueler.add(lFehler);
+                //Button Schülerdaten finden
+                JButton bFinden = new JButton();
+                bFinden.setBounds(60, 80, 180, 20);
+                bFinden.setText("Daten importieren");
+                bFinden.setMargin(new Insets(2, 2, 2, 2));
+                bFinden.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        System.out.println("Suche gestartet!");
+                        //hier wird nun der Schüler gesucht
+                        String vorname = tfVorname.getText();
+                        String nachname = tfNachname.getText();
+                        String geburtstag = tfGeburtstag.getText();
+                        System.out.println(vorname + " " + nachname + " " + geburtstag + " " + string_ist_dtformat(geburtstag));
+                        if (!string_ist_dtformat(geburtstag) || vorname == "Vorname" || vorname == "" || nachname == "" || nachname == "Nachname") {
+                            lFehler.setText("Anmeldedaten ungültig!");
+                            lFehler.show(true);
+                            return; //falls der Schüler keinen Namen oder ein falsches Geburtsdatum angegeben hat, wird dies hier ausgegeben
+                        }
+                        String sql = "SELECT * FROM schueler WHERE Vorname='" + vorname + "' AND Name='" + nachname + "' AND Geburtstag='" + geburtstag + "'";
+                        String[][] antwort = myDBManager.sqlAnfrageAusfuehren(sql); //hier wird nach dem Schüler gesucht
+                        System.out.println(antwort.length + "");
+                        if (antwort.length != 2) {
+                            lFehler.setText("Schüler nicht gefunden! Bitte gib deine Anmeldedaten manuell ein.");
+                            lFehler.show(true);
+                            return; //falls der Schüler nicht (eindeutig) gefunden werden konnte, wird ein Fehler ausgegeben
+                        }
+                        //hier ist der Schüler erfolgreich gefunden worden
+                        //TODO bla bla daten übernehmen
+                        lFehler.setText("<html>Deine Daten werden übernommen!</br>Dein Benutzername ist " + vorname + " " + nachname);
+                        lFehler.show(true);
+                    }
+                });
+                istschueler.add(bFinden);
             }
 
             @Override
@@ -350,6 +480,25 @@ public class Anmeldung extends JFrame {
             }
         }
         return max_id+1;
+    };
+
+    public boolean string_ist_dtformat(String datetime) {
+        if (datetime.length() != 10) return false; //falls das Datum länger als 10 Buchstaben ist, muss etwas falsch sein
+        for (int i = 0; i < datetime.length(); i++) {
+            if ((i<4 || i==5 || i==6 || i>7) && !ist_numerisch(datetime.charAt(i) + "")) return false; //falls an Stelle 1-4, 6, 7, 9, 10 keine Zahl ist, ist das Datum ungültig
+            if ((i==4 || i==7) && datetime.charAt(i) != '-') return false; //falls an Stelle 5, 8 kein Bindestrich ist, ist das Datum ungültig
+        }
+        return true; //falls keine der obigen Bedingungen zutraf, ist das Datum korrekt eingegeben
+    };
+
+    public boolean ist_numerisch(String c) {
+        //Guckt nach, ob der Charakter in eine Zahl umgewandelt werden kann
+        try {
+            Integer.parseInt(c);
+            return true;
+        } catch(NumberFormatException e){
+            return false;
+        }
     };
 
     // Ende Methoden
