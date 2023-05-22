@@ -8,8 +8,8 @@ import java.awt.event.FocusListener;
 public class Registrierung extends JFrame {
     // Anfang Attribute
     private JButton bRegistrieren = new JButton(); //Registrierbutton
-    private Neues_Textfeld tfGroesse = new Neues_Textfeld(150, 10, 179, 33, "Größe"); //Eingabe der Größe
-    private Neues_Textfeld tfGeburtstag = new Neues_Textfeld(150, 50, 179, 33, "Geburtstag"); //Eingabe des Geburtstages
+    private Neues_Textfeld tfGroesse = new Neues_Textfeld(150, 10, 179, 33, "Größe (in cm)"); //Eingabe der Größe
+    private Neues_Textfeld tfGeburtstag = new Neues_Textfeld(150, 50, 179, 33, "Geburtstag (yyyy-mm-dd)"); //Eingabe des Geburtstages
     private Neues_Textfeld tfOrientierung = new Neues_Textfeld(150, 90, 179, 33, "Sex. Orientierung"); //Eingabe der orientierung
     private Neues_Textfeld tfGeschlecht = new Neues_Textfeld(150, 130, 179, 33, "Geschlecht"); //Eingabe des Geschlechtes
     private Neues_Textfeld tfLiebingsfach = new Neues_Textfeld(150, 170, 179, 33, "Lieblingsfach"); //Eingabe des Lieblingsfaches
@@ -37,7 +37,7 @@ public class Registrierung extends JFrame {
         // Ende Komponenten
 
         bRegistrieren.setBounds(150, 330, 179, 33);
-        bRegistrieren.setText("Daten übermitteln");
+        bRegistrieren.setText("Fange an zu Daten!");
         bRegistrieren.setMargin(new Insets(2, 2, 2, 2));
         bRegistrieren.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -57,6 +57,7 @@ public class Registrierung extends JFrame {
     }
 
     public void bRegistrieren_ActionPerformed(ActionEvent evt) {
+
 
         //Registrierung abgeschlossen
         dispose();
