@@ -24,9 +24,8 @@ public class Benutzeroberflaeche extends JFrame {
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        new Anmeldung(myDBManager);
-    } // end of main
+    public static void main(String[] args) { new Registrierung(new Benutzeroberflaeche()); } // end of main
+    //public static void main(String[] args) { new Anmeldung(myDBManager); } // end of main
 
     public void angemeldet() {
         System.out.println("nice!");
