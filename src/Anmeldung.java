@@ -370,7 +370,7 @@ public class Anmeldung extends JFrame {
         return max_id+1;
     };
 
-    public boolean string_ist_dtformat(String datetime) {
+    public static boolean string_ist_dtformat(String datetime) {
         if (datetime.length() != 10) return false; //falls das Datum länger als 10 Buchstaben ist, muss etwas falsch sein
         for (int i = 0; i < datetime.length(); i++) {
             if ((i<4 || i==5 || i==6 || i>7) && !ist_numerisch(datetime.charAt(i) + "")) return false; //falls an Stelle 1-4, 6, 7, 9, 10 keine Zahl ist, ist das Datum ungültig
@@ -379,7 +379,7 @@ public class Anmeldung extends JFrame {
         return true; //falls keine der obigen Bedingungen zutraf, ist das Datum korrekt eingegeben
     };
 
-    public boolean ist_numerisch(String c) {
+    public static boolean ist_numerisch(String c) {
         //Guckt nach, ob der Charakter in eine Zahl umgewandelt werden kann
         try { //Integer.parseInt wirft eine Fehlermeldung, falls c kein Int ist, diese wird hiermit abgefangen
             Integer.parseInt(c);
