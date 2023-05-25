@@ -9,18 +9,26 @@ public class Registrierung extends JFrame {
     private JButton bRegistrieren = new JButton(); //Registrierbutton
     private Neues_Textfeld tfGroesse = new Neues_Textfeld(150, 10, 179, 33, "Größe (in cm)"); //Eingabe der Größe
     private Neues_Textfeld tfGeburtstag = new Neues_Textfeld(150, 50, 179, 33, "Geburtstag (yyyy-mm-dd)"); //Eingabe des Geburtstages
-    ButtonGroup orientierungsgruppe = new ButtonGroup();
-    JLabel orientierung = new JLabel("Sex. Orientierung:");
-    private JRadioButton orientierung_1 = new JRadioButton("Mann"); //Eingabe der Orientierung
-    private JRadioButton orientierung_2 = new JRadioButton("Frau"); //Eingabe der Orientierung
-    private ButtonGroup geschlechtssgruppe = new ButtonGroup();
-    JLabel geschlecht = new JLabel("Geschlecht:");
-    private JRadioButton geschlecht_1 = new JRadioButton("Mann"); //Eingabe des Geschlechtes
-    private JRadioButton geschlecht_2 = new JRadioButton("Frau"); //Eingabe des Geschlechtes
-    private Neues_Textfeld tfLiebingsfach = new Neues_Textfeld(150, 170, 179, 33, "Lieblingsfach"); //Eingabe des Lieblingsfaches
-    private Neues_Textfeld tfAugenfarbe = new Neues_Textfeld(150, 210, 179, 33, "Augenfarbe"); //Eingabe der Augenfarbe
-    private Neues_Textfeld tfHaarfarbe = new Neues_Textfeld(150, 250, 179, 33, "Haarfarbe"); //Eingabe der Haarfarbe
-    private Neues_Textfeld tfFigur = new Neues_Textfeld(150, 290, 179, 33, "Figur"); //Eingabe der Figur
+    ButtonGroup bgOrientierungsgruppe = new ButtonGroup();
+    JLabel lOrientierung = new JLabel("Sex. Orientierung:");
+    private JRadioButton rbOrientierung_1 = new JRadioButton("Mann"); //Eingabe der Orientierung
+    private JRadioButton rbOrientierung_2 = new JRadioButton("Frau"); //Eingabe der Orientierung
+    private ButtonGroup bgGeschlechtssgruppe = new ButtonGroup();
+    JLabel lGeschlecht = new JLabel("Geschlecht:");
+    private JRadioButton rbGeschlecht_1 = new JRadioButton("Mann"); //Eingabe des Geschlechtes
+    private JRadioButton rbGeschlecht_2 = new JRadioButton("Frau"); //Eingabe des Geschlechtes
+    private JLabel lLieblingsfach = new JLabel("Lieblingsfach:");
+    String[] faecher = {"Mathematik", "Physik", "Informatik", "Politik", "Englisch", "Deutsch", "Religion", "Kunst", "Sport", "Latein", "Geschichte", "Französisch", "Spanisch", "Musik"};
+    private JComboBox cbLiebingsfach = new JComboBox(faecher); //Eingabe der Augenfarbe
+    private JLabel lAugenfarbe = new JLabel("Augenfarbe:");
+    String[] augenfarben = {"Blau", "Grün", "Braun"};
+    private JComboBox cbAugenfarbe = new JComboBox(augenfarben); //Eingabe der Augenfarbe
+    private JLabel lHaarfarbe = new JLabel("Haarfarbe:");
+    String[] haarfarben = {"Braun", "Blond", "Rot", "Bunt", "Blau", "Grün", "Immer anders"};
+    private JComboBox cbHaarfarbe = new JComboBox(haarfarben); //Eingabe der Haarfarbe
+    private JLabel lFigur = new JLabel("Haarfarbe:");
+    String[] figuren = {"Sportlich", "Gesund", "Übergewichtig"};
+    private JComboBox cbFigur = new JComboBox(figuren); //Eingabe der Figur
     private JLabel lFehleranzeige = new JLabel();
     private Benutzeroberflaeche ui;
     // Ende Attribute
@@ -53,26 +61,42 @@ public class Registrierung extends JFrame {
         cp.add(bRegistrieren);
         cp.add(tfGroesse);
         cp.add(tfGeburtstag);
-        orientierung.setBounds(150, 83, 179, 20);
-        cp.add(orientierung);
-        orientierung_1.setBounds(150, 104, 89, 25);
-        orientierung_2.setBounds(239, 104, 89, 25);
-        orientierungsgruppe.add(orientierung_1);
-        orientierungsgruppe.add(orientierung_2);
-        cp.add(orientierung_1);
-        cp.add(orientierung_2);
-        geschlecht.setBounds(150, 130, 179, 20);
-        cp.add(geschlecht);
-        geschlecht_1.setBounds(150, 145, 89, 25);
-        geschlecht_2.setBounds(239, 145, 89, 25);
-        geschlechtssgruppe.add(geschlecht_1);
-        geschlechtssgruppe.add(geschlecht_2);
-        cp.add(geschlecht_1);
-        cp.add(geschlecht_2);
-        cp.add(tfLiebingsfach);
-        cp.add(tfAugenfarbe);
-        cp.add(tfHaarfarbe);
-        cp.add(tfFigur);
+        lOrientierung.setBounds(150, 83, 179, 20);
+        cp.add(lOrientierung);
+        rbOrientierung_1.setBounds(150, 104, 89, 25);
+        rbOrientierung_1.setMnemonic(1);
+        rbOrientierung_2.setBounds(239, 104, 89, 25);
+        rbOrientierung_2.setMnemonic(2);
+        bgOrientierungsgruppe.add(rbOrientierung_1);
+        bgOrientierungsgruppe.add(rbOrientierung_2);
+        cp.add(rbOrientierung_1);
+        cp.add(rbOrientierung_2);
+        lGeschlecht.setBounds(150, 130, 179, 20);
+        cp.add(lGeschlecht);
+        rbGeschlecht_1.setBounds(150, 145, 89, 25);
+        rbGeschlecht_1.setMnemonic(1);
+        rbGeschlecht_2.setBounds(239, 145, 89, 25);
+        rbGeschlecht_2.setMnemonic(2);
+        bgGeschlechtssgruppe.add(rbGeschlecht_1);
+        bgGeschlechtssgruppe.add(rbGeschlecht_2);
+        cp.add(rbGeschlecht_1);
+        cp.add(rbGeschlecht_2);
+        lLieblingsfach.setBounds(150, 165, 179, 20);
+        cp.add(lLieblingsfach);
+        cbLiebingsfach.setBounds(150, 185, 179, 20);
+        cp.add(cbLiebingsfach);
+        lAugenfarbe.setBounds(150, 205, 179, 20);
+        cp.add(lAugenfarbe);
+        cbAugenfarbe.setBounds(150, 225, 179, 20);
+        cp.add(cbAugenfarbe);
+        lHaarfarbe.setBounds(150, 245, 179, 20);
+        cp.add(lHaarfarbe);
+        cbHaarfarbe.setBounds(150, 265, 179, 20);
+        cp.add(cbHaarfarbe);
+        lFigur.setBounds(150, 285, 179, 20);
+        cp.add(lFigur);
+        cbFigur.setBounds(150, 305, 179, 20);
+        cp.add(cbFigur);
         lFehleranzeige.setText("");
         lFehleranzeige.setBounds(150, 370, 179, 33);
         lFehleranzeige.setHorizontalAlignment(SwingConstants.CENTER);
@@ -82,9 +106,23 @@ public class Registrierung extends JFrame {
 
     public void bRegistrieren_ActionPerformed(ActionEvent evt) {
         setze_border_zurueck();
-        String geburtstag = tfGeburtstag.getText();
+        if (!registrierdaten_korrekt()) return;
+        /*größe
+        geburtstag
+        orientierung
+        geschlecht
+        fach
+        augenfarbe
+        haarfarbe
+        figur*/
         String groesse = tfGroesse.getText();
-        if (!anmeldedaten_korrekt()) return;
+        String geburtstag = tfGeburtstag.getText();
+        String orientierung = bgOrientierungsgruppe.getSelection().getMnemonic() + ""; //1: Mann, 2: Frau
+        String geschlecht = bgGeschlechtssgruppe.getSelection().getMnemonic() + ""; //1: Mann, 2: Frau
+        String fach = cbLiebingsfach.getSelectedItem().toString();
+        String augenfarbe = cbAugenfarbe.getSelectedItem().toString();
+        String haarfarbe = cbHaarfarbe.getSelectedItem().toString();
+        String figur = cbFigur.getSelectedItem().toString();
         //Registrierung abgeschlossen
         dispose();
         ui.show(true);
@@ -94,17 +132,12 @@ public class Registrierung extends JFrame {
     public void setze_border_zurueck() {
         tfGeburtstag.setBorder(null);
         tfGroesse.setBorder(null);
-        geschlecht.setBorder(null);
-        orientierung.setBorder(null);
-        tfLiebingsfach.setBorder(null);
+        lGeschlecht.setBorder(null);
+        lOrientierung.setBorder(null);
+        lLieblingsfach.setBorder(null);
     }
 
-    public boolean anmeldedaten_korrekt() {
-        /*
-        cp.add(tfLiebingsfach);
-        cp.add(tfAugenfarbe);
-        cp.add(tfHaarfarbe);
-        cp.add(tfFigur);*/
+    public boolean registrierdaten_korrekt() {
         boolean korrekt = true;
         if (!Anmeldung.string_ist_dtformat(tfGeburtstag.getText())) {//falls das Datum falsch eingegeben wurde, oder die Größe keine Zahl ist
             tfGeburtstag.setBorder(new LineBorder(Color.RED));
@@ -114,18 +147,15 @@ public class Registrierung extends JFrame {
             tfGroesse.setBorder(new LineBorder(Color.RED));
             korrekt = false;
         }
-        if (geschlechtssgruppe.getSelection() == null) {
-            geschlecht.setBorder(new LineBorder(Color.RED));
+        if (bgGeschlechtssgruppe.getSelection() == null) {
+            lGeschlecht.setBorder(new LineBorder(Color.RED));
             korrekt = false;
         }
-        if (orientierungsgruppe.getSelection() == null) {
-            orientierung.setBorder(new LineBorder(Color.RED));
+        if (bgOrientierungsgruppe.getSelection() == null) {
+            lOrientierung.setBorder(new LineBorder(Color.RED));
             korrekt = false;
         }
-        if (tfLiebingsfach.getText() == "" || tfLiebingsfach.getText() == "Lieblingsfach") {
-            tfLiebingsfach.setBorder(new LineBorder(Color.RED));
-            korrekt = false;
-        }
+        //fach
         if (korrekt) return true;
         lFehleranzeige.setText("Überprüfe deine Anmeldedaten!");
         return false;
