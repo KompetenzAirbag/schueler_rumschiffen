@@ -1,7 +1,13 @@
 import java.awt.*;
 import java.awt.event.*;
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.security.MessageDigest; //umbedingt knak fragen
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
@@ -191,7 +197,7 @@ public class Anmeldung extends JFrame {
                         String vorname = tfVorname.getText();
                         String nachname = tfNachname.getText();
                         String geburtstag = tfGeburtstag.getText();
-                        if (!string_ist_dtformat(geburtstag) || vorname == "Vorname" || vorname == "" || nachname == "" || nachname == "Nachname") {
+                        if (!Hilfsklasse.string_ist_dtformat(geburtstag) || vorname == "Vorname" || vorname == "" || nachname == "" || nachname == "Nachname") {
                             lFehler.setText("Anmeldedaten ungültig!");
                             lFehler.show(true);
                             return; //falls der Schüler keinen Namen oder ein falsches Geburtsdatum angegeben hat, wird dies hier ausgegeben
@@ -267,7 +273,7 @@ public class Anmeldung extends JFrame {
                 zeige_fehler("Anmeldung erfolgreich!");
                 ui = new Benutzeroberflaeche();
                 dispose();
-                ui.angemeldet();
+                ui.angemeldet(ui);
             } else {
                 zeige_fehler("Anmeldedaten falsch!");
             }
@@ -369,25 +375,5 @@ public class Anmeldung extends JFrame {
         }
         return max_id+1;
     };
-
-    public static boolean string_ist_dtformat(String datetime) {
-        if (datetime.length() != 10) return false; //falls das Datum länger als 10 Buchstaben ist, muss etwas falsch sein
-        for (int i = 0; i < datetime.length(); i++) {
-            if ((i<4 || i==5 || i==6 || i>7) && !ist_numerisch(datetime.charAt(i) + "")) return false; //falls an Stelle 1-4, 6, 7, 9, 10 keine Zahl ist, ist das Datum ungültig
-            if ((i==4 || i==7) && datetime.charAt(i) != '-') return false; //falls an Stelle 5, 8 kein Bindestrich ist, ist das Datum ungültig
-        }
-        return true; //falls keine der obigen Bedingungen zutraf, ist das Datum korrekt eingegeben
-    };
-
-    public static boolean ist_numerisch(String c) {
-        //Guckt nach, ob der Charakter in eine Zahl umgewandelt werden kann
-        try { //Integer.parseInt wirft eine Fehlermeldung, falls c kein Int ist, diese wird hiermit abgefangen
-            Integer.parseInt(c);
-            return true;
-        } catch(NumberFormatException e){
-            return false;
-        }
-    };
-
     // Ende Methoden
 } // end of class Anmeldung

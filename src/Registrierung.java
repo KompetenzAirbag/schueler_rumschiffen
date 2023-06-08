@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 import javax.swing.border.LineBorder;
 
 public class Registrierung extends JFrame {
@@ -9,14 +10,8 @@ public class Registrierung extends JFrame {
     private JButton bRegistrieren = new JButton(); //Registrierbutton
     private Neues_Textfeld tfGroesse = new Neues_Textfeld(150, 10, 179, 33, "Größe (in cm)"); //Eingabe der Größe
     private Neues_Textfeld tfGeburtstag = new Neues_Textfeld(150, 50, 179, 33, "Geburtstag (yyyy-mm-dd)"); //Eingabe des Geburtstages
-    ButtonGroup bgOrientierungsgruppe = new ButtonGroup();
-    JLabel lOrientierung = new JLabel("Sex. Orientierung:");
-    private JRadioButton rbOrientierung_1 = new JRadioButton("Mann"); //Eingabe der Orientierung
-    private JRadioButton rbOrientierung_2 = new JRadioButton("Frau"); //Eingabe der Orientierung
-    private ButtonGroup bgGeschlechtssgruppe = new ButtonGroup();
-    JLabel lGeschlecht = new JLabel("Geschlecht:");
-    private JRadioButton rbGeschlecht_1 = new JRadioButton("Mann"); //Eingabe des Geschlechtes
-    private JRadioButton rbGeschlecht_2 = new JRadioButton("Frau"); //Eingabe des Geschlechtes
+    private Optionsfeld bgOrientierungsgruppe = new Optionsfeld(this, "Sex. Orientierung:", Arrays.asList("Mann", "Frau"), 150, 83);
+    private Optionsfeld bgGeschlechtssgruppe = new Optionsfeld(this, "Geschlecht:", Arrays.asList("Mann", "Frau"), 150, 130);
     private JLabel lLieblingsfach = new JLabel("Lieblingsfach:");
     String[] faecher = {"Mathematik", "Physik", "Informatik", "Politik", "Englisch", "Deutsch", "Religion", "Kunst", "Sport", "Latein", "Geschichte", "Französisch", "Spanisch", "Musik"};
     private JComboBox cbLiebingsfach = new JComboBox(faecher); //Eingabe der Augenfarbe
@@ -61,7 +56,7 @@ public class Registrierung extends JFrame {
         cp.add(bRegistrieren);
         cp.add(tfGroesse);
         cp.add(tfGeburtstag);
-        lOrientierung.setBounds(150, 83, 179, 20);
+        /*lOrientierung.setBounds(150, 83, 179, 20);
         cp.add(lOrientierung);
         rbOrientierung_1.setBounds(150, 104, 89, 25);
         rbOrientierung_1.setMnemonic(1);
@@ -70,8 +65,8 @@ public class Registrierung extends JFrame {
         bgOrientierungsgruppe.add(rbOrientierung_1);
         bgOrientierungsgruppe.add(rbOrientierung_2);
         cp.add(rbOrientierung_1);
-        cp.add(rbOrientierung_2);
-        lGeschlecht.setBounds(150, 130, 179, 20);
+        cp.add(rbOrientierung_2);*/
+        /*lGeschlecht.setBounds(150, 130, 179, 20);
         cp.add(lGeschlecht);
         rbGeschlecht_1.setBounds(150, 145, 89, 25);
         rbGeschlecht_1.setMnemonic(1);
@@ -80,7 +75,7 @@ public class Registrierung extends JFrame {
         bgGeschlechtssgruppe.add(rbGeschlecht_1);
         bgGeschlechtssgruppe.add(rbGeschlecht_2);
         cp.add(rbGeschlecht_1);
-        cp.add(rbGeschlecht_2);
+        cp.add(rbGeschlecht_2);*/
         lLieblingsfach.setBounds(150, 165, 179, 20);
         cp.add(lLieblingsfach);
         cbLiebingsfach.setBounds(150, 185, 179, 20);
@@ -126,33 +121,33 @@ public class Registrierung extends JFrame {
         //Registrierung abgeschlossen
         dispose();
         ui.show(true);
-        ui.angemeldet();
+        ui.angemeldet(ui);
     }
 
     public void setze_border_zurueck() {
         tfGeburtstag.setBorder(null);
         tfGroesse.setBorder(null);
-        lGeschlecht.setBorder(null);
-        lOrientierung.setBorder(null);
+        Hilfsklasse.markiere_label(this.getContentPane(), "Geschlecht:", null);
+        Hilfsklasse.markiere_label(this.getContentPane(), "Sex. Orientierung:", null);
         lLieblingsfach.setBorder(null);
     }
 
     public boolean registrierdaten_korrekt() {
         boolean korrekt = true;
-        if (!Anmeldung.string_ist_dtformat(tfGeburtstag.getText())) {//falls das Datum falsch eingegeben wurde, oder die Größe keine Zahl ist
+        if (!Hilfsklasse.string_ist_dtformat(tfGeburtstag.getText())) {//falls das Datum falsch eingegeben wurde, oder die Größe keine Zahl ist
             tfGeburtstag.setBorder(new LineBorder(Color.RED));
             korrekt = false;
         }
-        if (!Anmeldung.ist_numerisch(tfGroesse.getText())) {
+        if (!Hilfsklasse.ist_numerisch(tfGroesse.getText())) {
             tfGroesse.setBorder(new LineBorder(Color.RED));
             korrekt = false;
         }
         if (bgGeschlechtssgruppe.getSelection() == null) {
-            lGeschlecht.setBorder(new LineBorder(Color.RED));
+            Hilfsklasse.markiere_label(this.getContentPane(), "Geschlecht:", Color.RED);
             korrekt = false;
         }
         if (bgOrientierungsgruppe.getSelection() == null) {
-            lOrientierung.setBorder(new LineBorder(Color.RED));
+            Hilfsklasse.markiere_label(this.getContentPane(), "Sex. Orientierung:", Color.RED);
             korrekt = false;
         }
         //fach
