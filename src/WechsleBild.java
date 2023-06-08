@@ -29,7 +29,7 @@ public class WechsleBild extends JPanel{
                 throw new RuntimeException(e);
             }
             alpha += (double) 1 / ((double) uebergang / 100);
-            System.out.println(alpha + "");
+            //System.out.println(alpha + "");
         }
     }
 }

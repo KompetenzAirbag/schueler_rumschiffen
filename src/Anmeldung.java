@@ -19,8 +19,6 @@ import java.util.Arrays;
 
 public class Anmeldung extends JFrame {
     // Anfang Attribute
-    private DBManagerSQLite myDBManager; //Datenbank wird geladen
-    private static Benutzeroberflaeche ui;
     private JButton bAnmelden = new JButton(); //Anmeldebutton
     private JButton bRegistrieren = new JButton(); //Registrierbutton
     private Neues_Textfeld tfEmail = new Neues_Textfeld(95, 134, 302, 20, "E-Mail-Adresse"); //E-Mail-Eingabe
@@ -37,10 +35,9 @@ public class Anmeldung extends JFrame {
     String id_nummer = "NULL";
     // Ende Attribute
 
-    public Anmeldung(DBManagerSQLite Datenbank) {
+    public Anmeldung() {
         // Frame-Initialisierung
         super();
-        myDBManager = Datenbank;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         int frameWidth = 512;
         int frameHeight = 400;
@@ -203,7 +200,7 @@ public class Anmeldung extends JFrame {
                             return; //falls der Schüler keinen Namen oder ein falsches Geburtsdatum angegeben hat, wird dies hier ausgegeben
                         }
                         String sql = "SELECT * FROM schueler WHERE Vorname='" + vorname + "' AND Name='" + nachname + "' AND Geburtstag='" + geburtstag + "'";
-                        String[][] antwort = myDBManager.sqlAnfrageAusfuehren(sql); //hier wird nach dem Schüler gesucht
+                        String[][] antwort = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql); //hier wird nach dem Schüler gesucht
                         if (antwort.length != 2) {
                             lFehler.setText("Schüler nicht gefunden! Bitte gib deine Anmeldedaten manuell ein.");
                             lFehler.show(true);
@@ -267,11 +264,11 @@ public class Anmeldung extends JFrame {
         }
         if (existiert_benutzer(email, email)) {
             String sql = "SELECT Passwort FROM benutzer WHERE Benutzername = '" + email + "' OR EMail='" + email + "'";
-            String db_passwort = myDBManager.sqlAnfrageAusfuehren(sql)[1][0]; //das Passwort für diesen Benutzer wird abgefragt
+            String db_passwort = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql)[1][0]; //das Passwort für diesen Benutzer wird abgefragt
             if (passwort.equals(db_passwort)) {
                 //Ab dieser Stelle war die Anmeldung erfolgreich
                 zeige_fehler("Anmeldung erfolgreich!");
-                ui = new Benutzeroberflaeche();
+                Benutzeroberflaeche ui = new Benutzeroberflaeche();
                 dispose();
                 ui.angemeldet(ui);
             } else {
@@ -294,18 +291,7 @@ public class Anmeldung extends JFrame {
         }
         if (!existiert_benutzer(benutzername, email)) {
             int neue_id = generiere_neue_id("benutzer"); //falls der Benutzer noch nicht existiert, werden seine Anmeldedaten in der Datenbank gespeichert
-            String sql = "INSERT INTO benutzer VALUES (" + neue_id + ", '" + benutzername + "', '" + email + "', '" + passwort + "', ";
-            if (id_nummer == "NULL") {
-                sql += id_nummer + ")";
-            } else {
-                sql += "'" + id_nummer + "')";
-            }
-            myDBManager.datensatzEinfuegen(sql); //Datenbank wird aktualisiert
-            //Ab dieser Stelle war die Registrierung erfolgreich
-            zeige_fehler("Registrierung erfolgreich!");
-            ui = new Benutzeroberflaeche();
-            ui.show(false);
-            Registrierung reg = new Registrierung(ui);
+            new Registrierung(neue_id, benutzername, email, passwort, id_nummer);
             dispose();
         } else {
             zeige_fehler("<html>Benutzername oder E-Mail-Adresse bereits vergeben!<br/>Bitte versuche einen Anderen oder melde dich an!</html>");
@@ -315,7 +301,7 @@ public class Anmeldung extends JFrame {
     public boolean existiert_benutzer(String benutzername, String email) {
         //ab hier wird geguckt, ob der Benutzername, oder die E-Mail-Adresse bereits im System ist
         String sql = "SELECT * FROM benutzer WHERE Benutzername='" + benutzername + "' OR EMail = '" + email + "'";
-        String[][] ergebnis = myDBManager.sqlAnfrageAusfuehren(sql);
+        String[][] ergebnis = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql);
         if (ergebnis.length == 1) return false; //falls der Benutzer neu ist
         return true;
     }
@@ -349,7 +335,7 @@ public class Anmeldung extends JFrame {
 
         //hier werden Tabellennamen und Anzahl der Datensätze der gesuchten Tabelle abgefragt
         String sql = "SELECT * FROM " + tabelle;
-        String[][] ergebnis = myDBManager.sqlAnfrageAusfuehren(sql);
+        String[][] ergebnis = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql);
         String[] tabellennamen = ergebnis[0];
         int laenge = ergebnis.length-1; //Länge der Tabelle wird später genutzt, falls die ID kein Int ist.
 
@@ -357,7 +343,7 @@ public class Anmeldung extends JFrame {
         for (int i=0; i<tabellennamen.length; i++) {
             if (tabellennamen[i].contains("ID") || tabellennamen[i].contains("id") || tabellennamen[i].contains("Id")) {
                 sql = "SELECT MAX(" + tabellennamen[i] + ") FROM " + tabelle;
-                ergebnis = myDBManager.sqlAnfrageAusfuehren(sql);
+                ergebnis = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql);
                 if (ergebnis.length > 1) {
                     try { //try-catch wird benutzt, um zu gucken, ob es sich wirklich um einen Int handelt (Integer.parseInt wirft eine Fehlermeldung anderenfalls)
                         max_id = Integer.parseInt(ergebnis[1][0]);

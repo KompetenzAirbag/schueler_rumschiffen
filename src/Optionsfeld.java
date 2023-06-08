@@ -13,7 +13,7 @@ public class Optionsfeld extends ButtonGroup {
         cp.add(l);
         for (int i = 0; i < optionen.size(); i++) {
             JRadioButton rb = new JRadioButton(optionen.get(i));
-            rb.setBounds(x+i*90, y+20, 90, 20);//optionen.get(i).length()*2
+            rb.setBounds(x+i*80, y+20, 80, 20);//optionen.get(i).length()*2
             rb.setMnemonic(i);
             add(rb);
             cp.add(rb);

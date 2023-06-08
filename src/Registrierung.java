@@ -13,24 +13,28 @@ public class Registrierung extends JFrame {
     private Optionsfeld bgOrientierungsgruppe = new Optionsfeld(this, "Sex. Orientierung:", Arrays.asList("Mann", "Frau"), 150, 83);
     private Optionsfeld bgGeschlechtssgruppe = new Optionsfeld(this, "Geschlecht:", Arrays.asList("Mann", "Frau"), 150, 130);
     private JLabel lLieblingsfach = new JLabel("Lieblingsfach:");
-    String[] faecher = {"Mathematik", "Physik", "Informatik", "Politik", "Englisch", "Deutsch", "Religion", "Kunst", "Sport", "Latein", "Geschichte", "Französisch", "Spanisch", "Musik"};
-    private JComboBox cbLiebingsfach = new JComboBox(faecher); //Eingabe der Augenfarbe
+    private JComboBox cbLiebingsfach = new JComboBox(Hilfsklasse.faecher); //Eingabe des Lieblingsfaches
     private JLabel lAugenfarbe = new JLabel("Augenfarbe:");
-    String[] augenfarben = {"Blau", "Grün", "Braun"};
-    private JComboBox cbAugenfarbe = new JComboBox(augenfarben); //Eingabe der Augenfarbe
+    private JComboBox cbAugenfarbe = new JComboBox(Hilfsklasse.augenfarben); //Eingabe der Augenfarbe
     private JLabel lHaarfarbe = new JLabel("Haarfarbe:");
-    String[] haarfarben = {"Braun", "Blond", "Rot", "Bunt", "Blau", "Grün", "Immer anders"};
-    private JComboBox cbHaarfarbe = new JComboBox(haarfarben); //Eingabe der Haarfarbe
+    private JComboBox cbHaarfarbe = new JComboBox(Hilfsklasse.haarfarben); //Eingabe der Haarfarbe
     private JLabel lFigur = new JLabel("Haarfarbe:");
-    String[] figuren = {"Sportlich", "Gesund", "Übergewichtig"};
-    private JComboBox cbFigur = new JComboBox(figuren); //Eingabe der Figur
+    private JComboBox cbFigur = new JComboBox(Hilfsklasse.figuren); //Eingabe der Figur
     private JLabel lFehleranzeige = new JLabel();
-    private Benutzeroberflaeche ui;
+    private int neue_id;
+    private String benutzername;
+    private String email;
+    private String passwort;
+    private String id_nummer;
     // Ende Attribute
-    public Registrierung(Benutzeroberflaeche bo) {
+    public Registrierung(int arg_neue_id, String arg_benutzername, String arg_email, String arg_passwort, String arg_id_nummer) {
         // Frame-Initialisierung
         super();
-        ui = bo;
+        neue_id = arg_neue_id;
+        benutzername = arg_benutzername;
+        email = arg_email;
+        passwort = arg_passwort;
+        id_nummer = arg_id_nummer;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         int frameWidth = 500;
         int frameHeight = 550;
@@ -56,26 +60,6 @@ public class Registrierung extends JFrame {
         cp.add(bRegistrieren);
         cp.add(tfGroesse);
         cp.add(tfGeburtstag);
-        /*lOrientierung.setBounds(150, 83, 179, 20);
-        cp.add(lOrientierung);
-        rbOrientierung_1.setBounds(150, 104, 89, 25);
-        rbOrientierung_1.setMnemonic(1);
-        rbOrientierung_2.setBounds(239, 104, 89, 25);
-        rbOrientierung_2.setMnemonic(2);
-        bgOrientierungsgruppe.add(rbOrientierung_1);
-        bgOrientierungsgruppe.add(rbOrientierung_2);
-        cp.add(rbOrientierung_1);
-        cp.add(rbOrientierung_2);*/
-        /*lGeschlecht.setBounds(150, 130, 179, 20);
-        cp.add(lGeschlecht);
-        rbGeschlecht_1.setBounds(150, 145, 89, 25);
-        rbGeschlecht_1.setMnemonic(1);
-        rbGeschlecht_2.setBounds(239, 145, 89, 25);
-        rbGeschlecht_2.setMnemonic(2);
-        bgGeschlechtssgruppe.add(rbGeschlecht_1);
-        bgGeschlechtssgruppe.add(rbGeschlecht_2);
-        cp.add(rbGeschlecht_1);
-        cp.add(rbGeschlecht_2);*/
         lLieblingsfach.setBounds(150, 165, 179, 20);
         cp.add(lLieblingsfach);
         cbLiebingsfach.setBounds(150, 185, 179, 20);
@@ -110,16 +94,29 @@ public class Registrierung extends JFrame {
         augenfarbe
         haarfarbe
         figur*/
-        String groesse = tfGroesse.getText();
+        double groesse = Double.parseDouble(tfGroesse.getText())/100;
         String geburtstag = tfGeburtstag.getText();
-        String orientierung = bgOrientierungsgruppe.getSelection().getMnemonic() + ""; //1: Mann, 2: Frau
-        String geschlecht = bgGeschlechtssgruppe.getSelection().getMnemonic() + ""; //1: Mann, 2: Frau
+        String orientierung; //1: Mann, 2: Frau
+        if (bgOrientierungsgruppe.getSelection().getMnemonic() == 1) orientierung = "m"; //1: Mann, 2: Frau
+        else orientierung = "w";
+        String geschlecht;
+        if (bgGeschlechtssgruppe.getSelection().getMnemonic() == 1) geschlecht = "m"; //1: Mann, 2: Frau
+        else geschlecht = "w";
         String fach = cbLiebingsfach.getSelectedItem().toString();
         String augenfarbe = cbAugenfarbe.getSelectedItem().toString();
         String haarfarbe = cbHaarfarbe.getSelectedItem().toString();
         String figur = cbFigur.getSelectedItem().toString();
+        String sql = "INSERT INTO benutzer VALUES (" + neue_id + ", '" + benutzername + "', '" + email + "', '" + passwort + "', ";
+        if (id_nummer == "NULL") {
+            sql += id_nummer + "";
+        } else {
+            sql += "'" + id_nummer + "'";
+        }
+        sql += ", " + groesse + ", '" + geburtstag + "', '" + orientierung + "', '" + geschlecht + "', '" + fach + "', '" + augenfarbe + "', '" + haarfarbe + "', '" + figur + "')";
+        Benutzeroberflaeche.myDBManager.datensatzEinfuegen(sql); //Datenbank wird aktualisiert
         //Registrierung abgeschlossen
         dispose();
+        Benutzeroberflaeche ui = new Benutzeroberflaeche();
         ui.show(true);
         ui.angemeldet(ui);
     }
