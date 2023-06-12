@@ -106,11 +106,13 @@ public class Registrierung extends JFrame {
         String augenfarbe = cbAugenfarbe.getSelectedItem().toString();
         String haarfarbe = cbHaarfarbe.getSelectedItem().toString();
         String figur = cbFigur.getSelectedItem().toString();
+        String id = neue_id + "";
         String sql = "INSERT INTO benutzer VALUES (" + neue_id + ", '" + benutzername + "', '" + email + "', '" + passwort + "', ";
         if (id_nummer == "NULL") {
             sql += id_nummer + "";
         } else {
             sql += "'" + id_nummer + "'";
+            id = id_nummer;
         }
         sql += ", " + groesse + ", '" + geburtstag + "', '" + orientierung + "', '" + geschlecht + "', '" + fach + "', '" + augenfarbe + "', '" + haarfarbe + "', '" + figur + "')";
         Benutzeroberflaeche.myDBManager.datensatzEinfuegen(sql); //Datenbank wird aktualisiert
@@ -118,7 +120,7 @@ public class Registrierung extends JFrame {
         dispose();
         Benutzeroberflaeche ui = new Benutzeroberflaeche();
         ui.show(true);
-        ui.angemeldet(ui);
+        ui.angemeldet(ui, id);
     }
 
     public void setze_border_zurueck() {

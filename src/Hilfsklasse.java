@@ -1,8 +1,11 @@
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.security.MessageDigest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class Hilfsklasse {
     public static String[] faecher = {"Mathematik", "Physik", "Informatik", "Chemie", "Biologie", "Politik", "Geschichte", "Erdkunde", "Religion", "Deutsch", "Englisch", "Latein", "Französisch", "Spanisch", "Kunst", "Musik", "Sport"};
@@ -47,10 +50,32 @@ public class Hilfsklasse {
                 else return profile[3];
             }
         }
-        return null; //falls null zurückgegeben wird, kann das Fach nicht zugeordnet werden
+        return "kein Fachgebiet"; //falls "kein Fachgebiet" zurückgegeben wird, kann das Fach nicht zugeordnet werden
     }
 
-    public static double bmi(double groesse, int gewicht) {
-        return Math.pow(gewicht/groesse, 2);
+    public static int string_zu_bmi(String figur) {
+        if (figur.equals("Sportlich")) return 20;
+        else if (figur.equals("Gesund")) return 25;
+        return 100;
+    }
+
+    public static int altersunterschied(String _geburtstag_1, String _geburtstag_2) {
+        //Fremdcode inspiration bei https://www.baeldung.com/java-date-difference
+        int abstand = 0;
+        SimpleDateFormat datumsformat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date geburtstag_1 = datumsformat.parse(_geburtstag_1);
+            Date geburtstag_2 = datumsformat.parse(_geburtstag_2);
+            abstand = (int) TimeUnit.DAYS.convert(Math.abs(geburtstag_1.getTime() - geburtstag_2.getTime()), TimeUnit.MILLISECONDS);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return abstand;
+    }
+    public static boolean prozentuelle_auswahl(int prozent) {
+        //bei jedem Methodenaufruf wird zu prozent% true zurückgegeben
+        int zufallszahl = (int) (Math.random() * ((100-1)+ 1)) + 1; //erzeugt zufallszahl zwischen 1 und 100
+        if (zufallszahl <= prozent) return true; //zu prozent% der Fälle ist dies Wahr
+        return false;
     }
 }

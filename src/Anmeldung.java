@@ -263,14 +263,16 @@ public class Anmeldung extends JFrame {
             return; //Methode wird beendet
         }
         if (existiert_benutzer(email, email)) {
-            String sql = "SELECT Passwort FROM benutzer WHERE Benutzername = '" + email + "' OR EMail='" + email + "'";
-            String db_passwort = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql)[1][0]; //das Passwort für diesen Benutzer wird abgefragt
+            String sql = "SELECT ID, Passwort FROM benutzer WHERE Benutzername = '" + email + "' OR EMail='" + email + "'";
+            String[][] ergebnis = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql); //die ID und das Passwort für diesen Benutzer wird abgefragt
+            String db_ID = ergebnis[1][0];
+            String db_passwort = ergebnis[1][1];
             if (passwort.equals(db_passwort)) {
                 //Ab dieser Stelle war die Anmeldung erfolgreich
                 zeige_fehler("Anmeldung erfolgreich!");
                 Benutzeroberflaeche ui = new Benutzeroberflaeche();
                 dispose();
-                ui.angemeldet(ui);
+                ui.angemeldet(ui, db_ID);
             } else {
                 zeige_fehler("Anmeldedaten falsch!");
             }
