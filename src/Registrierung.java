@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import javax.swing.border.LineBorder;
 
 public class Registrierung extends JFrame {
@@ -47,6 +49,29 @@ public class Registrierung extends JFrame {
         setResizable(false);
         Container cp = getContentPane();
         cp.setLayout(null);
+        if (!arg_id_nummer.equals("NULL")) {
+            //Hier beginnt die Abfrage, falls es sich bei der Registrierung um eine Schülerregistrierung handelt
+            String sql = "SELECT Groesse, Geburtstag, Geschlecht, Lieblingsfach, Augenfarbe, Haarfarbe FROM schueler WHERE ID_Nummer = '" + arg_id_nummer + "'";
+            String[] ergebnis = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql)[1];
+            tfGroesse.setText(Double.parseDouble(ergebnis[0])*100 + " ");
+            tfGroesse.setForeground(new Color(0,0,0));
+            tfGroesse.setFont(new Font("Serif", Font.PLAIN, 14));
+            tfGeburtstag.setText(ergebnis[1]);
+            tfGeburtstag.setForeground(new Color(0,0,0));
+            tfGeburtstag.setFont(new Font("Serif", Font.PLAIN, 14));
+            int geschlecht = 0; //das Geschlecht muss einer Nummer zugeordnet werden, damit es mit dem Mnemonic von der Buttongroup verglichen werden kann
+            switch (ergebnis[2]) {
+                case "m": geschlecht = 0; break;
+                case "w": geschlecht = 1; break;
+            }
+            //Hier werden zunächst alle Buttons der Gruppe abgerufen, um dann den richtigen auszuwählen
+            List<AbstractButton> buttons = Collections.list(bgGeschlechtssgruppe.getElements());
+            for (int i = 0; i < buttons.size(); i++) {
+                if (buttons.get(i).getMnemonic() == geschlecht) {
+                    bgGeschlechtssgruppe.setSelected(buttons.get(i).getModel(), true);
+                }
+            }
+        }
         // Ende Komponenten
 
         bRegistrieren.setBounds(150, 330, 179, 33);
@@ -86,14 +111,6 @@ public class Registrierung extends JFrame {
     public void bRegistrieren_ActionPerformed(ActionEvent evt) {
         setze_border_zurueck();
         if (!registrierdaten_korrekt()) return;
-        /*größe
-        geburtstag
-        orientierung
-        geschlecht
-        fach
-        augenfarbe
-        haarfarbe
-        figur*/
         double groesse = Double.parseDouble(tfGroesse.getText())/100;
         String geburtstag = tfGeburtstag.getText();
         String orientierung; //1: Mann, 2: Frau

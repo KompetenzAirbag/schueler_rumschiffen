@@ -14,7 +14,9 @@ public class Benutzeroberflaeche extends JFrame {
     private JButton bSpeichern = new JButton();
     private JButton bGespeichert = new JButton();
     private JButton bNaechste = new JButton();
+    private JButton bAktualisieren = new JButton();
     private JTextArea jTextArea1ScrollPane = new JTextArea();
+    private JTextArea jtaGespeicherteProfile = new JTextArea();
     private Optionsfeld bgOrientierung;
     private JLabel lFigur = new JLabel("Figur:");
     private JComboBox cbFigur = new JComboBox(Hilfsklasse.figuren); //Figurenpräferenz
@@ -24,6 +26,9 @@ public class Benutzeroberflaeche extends JFrame {
     private JLabel lUeberaschungsfaktor = new JLabel("Überaschungsfaktor:");
     private JLabel ich_suche_nach = new JLabel("Ich suche nach...");
     private String benutzer_id = "1";
+    private List<ArrayList<String>> passende_partner;
+    private List<String> momentanes_profil;
+    private Container cp;
     // Ende Attribute
     public Benutzeroberflaeche() {
         // Frame-Initialisierung
@@ -44,7 +49,7 @@ public class Benutzeroberflaeche extends JFrame {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        Container cp = getContentPane();
+        cp = getContentPane();
         cp.setLayout(null);
         // Ende Komponenten
 
@@ -70,7 +75,7 @@ public class Benutzeroberflaeche extends JFrame {
         });
         cp.add(bGespeichert);
         bNaechste.setBounds(580, 392, 171, 65);
-        bNaechste.setText("Naechste");
+        bNaechste.setText("Nächste");
         bNaechste.setMargin(new Insets(2, 2, 2, 2));
         bNaechste.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
@@ -78,6 +83,19 @@ public class Benutzeroberflaeche extends JFrame {
             }
         });
         cp.add(bNaechste);
+        bAktualisieren.setBounds(40, 280, 160, 30);
+        bAktualisieren.setText("Suche Aktualisieren");
+        bAktualisieren.setMargin(new Insets(2, 2, 2, 2));
+        bAktualisieren.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                bAktualisieren_ActionPerformed(evt);
+            }
+        });
+        cp.add(bAktualisieren);
+        jtaGespeicherteProfile.setBounds(730, 120, 200, 100);
+        cp.add(jtaGespeicherteProfile);
+        jtaGespeicherteProfile.hide();
         jTextArea1ScrollPane.setBounds(364, 40, 313, 313);
         cp.add(jTextArea1ScrollPane);
         String uefaktor_text = "In %, wie oft nicht dem Algorithmus entsprechende Profile angezeigt werden.";
@@ -102,43 +120,78 @@ public class Benutzeroberflaeche extends JFrame {
         setVisible(true);
     }
 
-    /*public static void main(String[] args) {
+    public static void main(String[] args) {
         new Anmeldung();
-    }*/
-    //public static void main(String[] args) { new Registrierung(new Benutzeroberflaeche()); } // end of main
-    public static void main(String[] args) { new Benutzeroberflaeche(); } // end of main
+    }
 
     public void angemeldet(Benutzeroberflaeche bo, String id) {
         benutzer_id = id;
-        /*ArrayList<Image> bilder = new ArrayList<Image>();
-        Image img1 = null;
-        Image img2 = null;
-        try {
-            img1 = ImageIO.read(new File("img/hintergrund/hintergrund_1.jpg"));
-            img2 = ImageIO.read(new File("img/hintergrund/hintergrund_2.jpg"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        bilder.add(img1);
-        bilder.add(img2);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                new WechsleBild(bo, bilder, true, 2000, 2000);
-            }
-        }).start();*/
     }
 
     public void bGespeichert_ActionPerformed(ActionEvent evt) {
-        setze_border_zurueck();
-        if (bgOrientierung.getSelection() == null) {
-            Hilfsklasse.markiere_label(getContentPane(), "Sex. Orientierung:", Color.RED);
+        if (jtaGespeicherteProfile.isVisible()) {
+            jtaGespeicherteProfile.hide();
             return;
+        }
+        String sql = "SELECT s.Vorname, s.Name, s.ID_Nummer, g.ist_schueler FROM gespeicherte_profile g, schueler s WHERE g.ist_schueler = 'true' AND g.partner_id = s.ID_Nummer AND g.benutzer_id = '" + benutzer_id + "'";
+        String[][] ergebnis_schueler = myDBManager.sqlAnfrageAusfuehren(sql);
+        sql = "SELECT b.Benutzername, b.ID, g.ist_schueler FROM gespeicherte_profile g, benutzer b WHERE g.partner_id = b.ID AND g.ist_schueler = 'false' AND g.benutzer_id = '" + benutzer_id + "'";
+        String[][] ergebnis_benutzer = myDBManager.sqlAnfrageAusfuehren(sql);
+        String[][] ergebnis = new String[ergebnis_benutzer.length+ergebnis_schueler.length-2][3];
+        for (int i = 0; i < ergebnis.length; i++) {
+            if (i<ergebnis_schueler.length-1) {
+                ergebnis[i][0] = ergebnis_schueler[i+1][0] + " " + ergebnis_schueler[i+1][1];
+                ergebnis[i][1] = ergebnis_schueler[i+1][2];
+                ergebnis[i][2] = ergebnis_schueler[i+1][3];
+            }
+            else if (ergebnis_benutzer.length > 1){
+                int korrektur = 0;
+                if (ergebnis_schueler.length == 1) korrektur = 1;
+                ergebnis[i][0] = ergebnis_benutzer[ergebnis_benutzer.length-i-korrektur][0];
+                ergebnis[i][1] = ergebnis_benutzer[ergebnis_benutzer.length-i-korrektur][1];
+                ergebnis[i][2] = ergebnis_benutzer[ergebnis_benutzer.length-i-korrektur][2];
+            }
+        }
+        JButton[] namen = new JButton[ergebnis.length];
+        for (int i = 0; i < ergebnis.length; i++) {
+            namen[i] = new JButton(ergebnis[i][0]);
+            int finalI = i;
+            namen[i].addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    jTextArea1ScrollPane.setText(Hilfsklasse.benutzerdaten_als_text(ergebnis[finalI][1], Boolean.parseBoolean(ergebnis[finalI][2])));
+                    for (int j = 0; j < namen.length; j++) {
+                        namen[j].hide();
+                        cp.remove(namen[j]);
+                    }
+                }
+            });
+            namen[i].setBounds(730, 120+i*20, 200, 20);
+            cp.add(namen[i]);
+            namen[i].show();
         }
     }
 
     public void bSpeichern_ActionPerformed(ActionEvent evt) {
+        String sql = "SELECT * FROM gespeicherte_profile WHERE benutzer_id = " + benutzer_id + " AND partner_id = '" + momentanes_profil.get(0) + "'";
+        int ergebnis = myDBManager.sqlAnfrageAusfuehren(sql).length;
 
+        if (ergebnis == 1) {
+            String ist_schueler = "true";
+            if (Hilfsklasse.ist_numerisch(momentanes_profil.get(0))) ist_schueler = "false";
+            int speicherung = Hilfsklasse.generiere_neue_id("gespeicherte_profile");
+            sql = "INSERT INTO gespeicherte_profile  VALUES (" + speicherung + ", " + benutzer_id + ", '" + momentanes_profil.get(0) + "', '" + ist_schueler + "')";
+            myDBManager.datensatzEinfuegen(sql);
+        }
+    }
+
+    public void bAktualisieren_ActionPerformed(ActionEvent evt) {
+        int orientierung;
+        if (bgOrientierung.getSelection() == null) orientierung = 2;
+        else orientierung = bgOrientierung.getSelection().getMnemonic();
+        String figur = cbFigur.getSelectedItem().toString();
+        String fachgebiet = cbFachgebiet.getSelectedItem().toString();
+        passende_partner = finde_partner_algo(orientierung, figur, fachgebiet);
     }
 
     public void bNaechste_ActionPerformed(ActionEvent evt) {
@@ -146,17 +199,23 @@ public class Benutzeroberflaeche extends JFrame {
         Hier wird immer ein neues Profil angezeigt, was laut dem Algorithmus gut zu dem Benutzer passt.
         Zunächst wird dafür geguckt, ob Präferenzen links im Bedienfeld gesetzt wurden, des Weiteren wird der Überraschungsfaktor ausgelesen.
         */
-        //präferenzen: orientierung, überraschungsfaktor, figur, fachgebiet
-        int orientierung;
-        if (bgOrientierung.getSelection() == null) orientierung = 2;
-        else orientierung = bgOrientierung.getSelection().getMnemonic();
-        int ueberaschungsfaktor = (int)slUeberaschungsfaktor.getValue();
-        String figur = cbFigur.getSelectedItem().toString();
-        String fachgebiet = cbFachgebiet.getSelectedItem().toString();
-        finde_partner_algo(orientierung, ueberaschungsfaktor, figur, fachgebiet);
+        int ueberaschungsfaktor = (int)slUeberaschungsfaktor.getValue(); //liest Überaschungsfaktor aus
+        if (passende_partner == null) { //falls die Suchdaten noch nicht aktualisiert wurde, werden sie hier "manuell" aktualisiert
+            bAktualisieren_ActionPerformed(null);
+        }
+        boolean ueberaschung = Hilfsklasse.prozentuelle_auswahl(ueberaschungsfaktor);
+        if (!ueberaschung) {
+            if (passende_partner.size() > 20) { //nur wenn die Partnerauswahl groß genug ist...
+                passende_partner = passende_partner.subList(0, 19);
+            }
+        }
+        int zufallszahl = (int) (Math.random() * passende_partner.size());
+        momentanes_profil = passende_partner.get(zufallszahl);
+
+        jTextArea1ScrollPane.setText(Hilfsklasse.benutzerdaten_als_text(momentanes_profil.get(0), Boolean.parseBoolean(momentanes_profil.get(6))));
     }
 
-    public String[][] finde_partner_algo(int orientierung, int ueberaschungsfaktor, String figur, String fachgebiet) {
+    public List<ArrayList<String>> finde_partner_algo(int orientierung, String figur, String fachgebiet) {
         /*
         Hier wird "ausgerechnet", welcher Partner der Beste ist. Dazu muss zum einen der BMI berechnet werden, um aussagen über die "Figur" treffen zu können.
         Es wird ein Array von IDs erstellt, welche (Schüler/Benutzer) am besten passen. Diese Liste wird genutzt, um von den obersten 20% (Mittelfeld, unteres Feld) eine zufällige Person auszuwählen.
@@ -182,16 +241,15 @@ public class Benutzeroberflaeche extends JFrame {
 
         //Ab hier beginnt die Schülerabfrage, wobei geschlecht und Figur (bzw. BMI) bedacht werden
         String[][] ergebnis_schueler = myDBManager.sqlAnfrageAusfuehren(schueler_sql);
-        List<List<String>> passende_schueler = new ArrayList<>();
+        List<ArrayList<String>> passende_schueler = new ArrayList<ArrayList<String>>();
 
         for (int i = 1; i < ergebnis_schueler.length; i++) {
             if (Hilfsklasse.fachgebiet(ergebnis_schueler[i][14]).equals(fachgebiet) || fachgebiet.equals("keine Angabe")) {
-                passende_schueler.add(new ArrayList<String>(Arrays.asList(ergebnis_schueler[i][0], ergebnis_schueler[i][2], ergebnis_schueler[i][1], ergebnis_schueler[i][3], ergebnis_schueler[i][11], "true", "")));
+                passende_schueler.add(new ArrayList<String>(Arrays.asList(ergebnis_schueler[i][0], ergebnis_schueler[i][2], ergebnis_schueler[i][1], ergebnis_schueler[i][3], ergebnis_schueler[i][11], ergebnis_schueler[i][6], "true", "")));
             }
         }
         //Hier beginnt die Benutzerabfrage
         String[][] ergebnis_benutzer = myDBManager.sqlAnfrageAusfuehren(benutzer_sql);
-        //int geschlechtsindex = Arrays.asList(ergebnis_benutzer[0]).indexOf("Lieblingsfach");
         for (int i = 1; i < ergebnis_benutzer.length; i++) {
             if (Hilfsklasse.fachgebiet(ergebnis_benutzer[i][9]).equals(fachgebiet) || fachgebiet.equals("keine Angabe")) {
                 String ist_schueler = "false";
@@ -200,8 +258,9 @@ public class Benutzeroberflaeche extends JFrame {
                     ist_schueler = "true";
                     id = ergebnis_benutzer[i][4];
                 }
-                passende_schueler.add(new ArrayList<String>(Arrays.asList(id, ergebnis_benutzer[i][1], "", ergebnis_benutzer[i][6], ergebnis_benutzer[i][5], ist_schueler, "")));
-                //passende_schueler.add(Arrays.stream(new String[]{id , ergebnis_benutzer[i][1], "", ergebnis_benutzer[i][6], ergebnis_benutzer[i][5], ist_schueler, ""}).toList());
+                if (!benutzer_id.equals(id)) {
+                    passende_schueler.add(new ArrayList<String>(Arrays.asList(id, ergebnis_benutzer[i][1], "", ergebnis_benutzer[i][6], ergebnis_benutzer[i][5], ergebnis_benutzer[i][8], ist_schueler, "")));
+                }
             }
         }
         /*
@@ -211,54 +270,21 @@ public class Benutzeroberflaeche extends JFrame {
          */
         String sql = "SELECT * FROM benutzer WHERE ID = " + benutzer_id + "";
         String[] benutzer = myDBManager.sqlAnfrageAusfuehren(sql)[1];
-        String[][] sortierte_passende_schueler = new String[passende_schueler.size()][7];
         for (int i = 0; i < passende_schueler.size(); i++) {
-            if (!benutzer_id.equals(passende_schueler.get(i).get(0))) {
-                int altersunterschied = Hilfsklasse.altersunterschied(benutzer[6], passende_schueler.get(i).get(3));
-                int groessenunterschied = (int) Math.abs((Double.parseDouble(benutzer[5]) - Double.parseDouble(passende_schueler.get(i).get(4))) * 4000);
-                int punkte = altersunterschied+groessenunterschied;
-                passende_schueler.get(i).set(6, punkte + ""); // je kleiner die Punkte, desto besser passt die Person
-                //hier wird der Schüler sortiert in ein Array eingefügt
-
-
-                for(int j = sortierte_passende_schueler.length - 1; j > 0; j--) {
-                    int alte_punkte;
-                    if (sortierte_passende_schueler[j][6] == null) alte_punkte = 0;
-                    else alte_punkte = Integer.parseInt(sortierte_passende_schueler[j][6]);
-                    if (alte_punkte == 0) continue; // skip last elements to avoid array index out of bound
-                    sortierte_passende_schueler[j + 1] = sortierte_passende_schueler[j];       // shift elements forward
-                    if (alte_punkte <= punkte) {       // if we found the right spot
-                        String[] neues_array = new String[passende_schueler.get(i).size()];
-                        sortierte_passende_schueler[j] = passende_schueler.get(i).toArray(neues_array);        // place the new element and
-                        System.out.println(Arrays.toString(passende_schueler.get(i).toArray(neues_array)));
-                        break;                 // break out the loop
-                    }
-                }
-
-                /*for (int j = 0; j < sortierte_passende_schueler.length; j++) {
-                    System.out.println(Arrays.toString(sortierte_passende_schueler[j]));
-                }*/
-
-                /*int j;
-                for(j = 0; i < sortierte_passende_schueler.length; i++){
-                    int alte_punkte;
-                    if (sortierte_passende_schueler[j][6] == null) alte_punkte = 0;
-                    else alte_punkte = Integer.parseInt(sortierte_passende_schueler[j][6]);
-                    if(alte_punkte > punkte) break;
-                }
-                for(int k = sortierte_passende_schueler.length-2; k >= j; k--){
-                    sortierte_passende_schueler[k+1] = sortierte_passende_schueler[k];
-                }
-                System.out.println(Arrays.toString(passende_schueler.get(i).toArray(new String[0])));
-                //sortierte_passende_schueler[j] = passende_schueler.get(i).toArray(new String[0]);
-                System.out.println(Arrays.toString(sortierte_passende_schueler[j]));*/
-            }
+            int altersunterschied = Hilfsklasse.altersunterschied(benutzer[6], passende_schueler.get(i).get(3));
+            int groessenunterschied = (int) Math.abs((Double.parseDouble(benutzer[5]) - Double.parseDouble(passende_schueler.get(i).get(4))) * 4000);
+            int punkte = altersunterschied+groessenunterschied;
+            passende_schueler.get(i).set(7, punkte + ""); // je kleiner die Punkte, desto besser passt die Person
         }
 
         //Hier wird die Liste nun sortiert, damit wir später die besten 20% herausfiltern können.
-
-        String[][] passende_schuelers = new String[1][2];
-        return passende_schuelers; //boolean ueberaschung = Hilfsklasse.prozentuelle_auswahl(ueberaschungsfaktor); wird genutzt, wo finde_partner_algo genutzt wird
+        passende_schueler.sort(new Comparator<ArrayList<String>>() { //Fremdcode inspiration durch https://stackoverflow.com/questions/20480723/how-to-sort-2d-arrayliststring-by-only-the-first-element
+            @Override
+            public int compare(ArrayList<String> l1, ArrayList<String> l2) {
+                return Integer.parseInt(l1.get(7)) - Integer.parseInt(l2.get(7));
+            }
+        });
+        return passende_schueler;
     }
 
     public void setze_border_zurueck() {

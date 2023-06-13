@@ -30,9 +30,8 @@ public class Anmeldung extends JFrame {
     private JLabel lIstSchueler = new JLabel(); //Ob der Anzumeldende ein Schüler ist (benötigten Daten werden aus Datenbank bezogen)
     boolean bereits_konto = false; //wichtig, um eine "Flip-Flop"-Logik beim Wechsel von Registrieren/Anmelden zu haben
     //Debug/Dev-option
-    boolean zeige_warnungen_an = false;
     boolean zeige_fehler_an = true;
-    String id_nummer = "NULL";
+    private String id_nummer = "NULL";
     // Ende Attribute
 
     public Anmeldung() {
@@ -84,7 +83,7 @@ public class Anmeldung extends JFrame {
         tfPasswort.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
-                tfPasswort.setEchoChar('*');
+                tfPasswort.setEchoChar('*'); //Aufgrund dieser Tatsache wurde das Passwort nicht in die Klasse Neues_Textfeld ausgelagert.
                 if (tfPasswort.getText().equals("Passwort") || tfPasswort.getText().equals("")) {
                     tfPasswort.setText("");
                     tfPasswort.setForeground(new Color(0,0,0));
@@ -157,67 +156,7 @@ public class Anmeldung extends JFrame {
         lIstSchueler.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                JFrame istschueler = new JFrame(); //neues Fenster für Eingabe der Schüler-Suchdaten
-                //Attribte des JFrames
-                istschueler.setTitle("Schüleranmeldung");
-                istschueler.setResizable(false);
-                istschueler.setLayout(null);
-                istschueler.setSize(300, 300);
-                istschueler.setLocation(x+100, y+50); //zentriert das Fenster
-                istschueler.show(true);
-
-                //Komponente des Frames
-                //Vorname
-                Neues_Textfeld tfVorname = new Neues_Textfeld(25, 20, 120, 20, "Vorname");
-                istschueler.add(tfVorname);
-                //Nachname
-                Neues_Textfeld tfNachname = new Neues_Textfeld(155, 20, 120, 20, "Nachname");
-                istschueler.add(tfNachname);
-                //Geburtstag
-                Neues_Textfeld tfGeburtstag = new Neues_Textfeld(20, 50, 240, 20, "Geburtstag yyyy-mm-tt");
-                istschueler.add(tfGeburtstag);
-                //Fehlerdisplay
-                JLabel lFehler = new JLabel();
-                lFehler.setBounds(30, 110, 240, 20);
-                lFehler.setText("");
-                //lFehler.show(false);
-                istschueler.add(lFehler);
-                //Button Schülerdaten finden
-                JButton bFinden = new JButton();
-                bFinden.setBounds(60, 80, 180, 20);
-                bFinden.setText("Daten importieren");
-                bFinden.setMargin(new Insets(2, 2, 2, 2));
-                bFinden.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        //hier wird nun der Schüler gesucht
-                        String vorname = tfVorname.getText();
-                        String nachname = tfNachname.getText();
-                        String geburtstag = tfGeburtstag.getText();
-                        if (!Hilfsklasse.string_ist_dtformat(geburtstag) || vorname == "Vorname" || vorname == "" || nachname == "" || nachname == "Nachname") {
-                            lFehler.setText("Anmeldedaten ungültig!");
-                            lFehler.show(true);
-                            return; //falls der Schüler keinen Namen oder ein falsches Geburtsdatum angegeben hat, wird dies hier ausgegeben
-                        }
-                        String sql = "SELECT * FROM schueler WHERE Vorname='" + vorname + "' AND Name='" + nachname + "' AND Geburtstag='" + geburtstag + "'";
-                        String[][] antwort = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql); //hier wird nach dem Schüler gesucht
-                        if (antwort.length != 2) {
-                            lFehler.setText("Schüler nicht gefunden! Bitte gib deine Anmeldedaten manuell ein.");
-                            lFehler.show(true);
-                            return; //falls der Schüler nicht (eindeutig) gefunden werden konnte, wird ein Fehler ausgegeben
-                        }
-                        //hier ist der Schüler erfolgreich gefunden worden
-                        //TODO bla bla daten übernehmen
-                        lFehler.setText("Deine Daten werden übernommen!");
-                        lFehler.show(true);
-                        tfBenutzername.setText(vorname + " " + nachname);
-                        tfBenutzername.setForeground(new Color(0,0,0));
-                        tfBenutzername.setFont(new Font("Serif", Font.PLAIN, 14));
-                        id_nummer = antwort[1][0];
-                        istschueler.dispose();
-                    }
-                });
-                istschueler.add(bFinden);
+                mouse_ist_schueler(x, y);
             }
 
             @Override
@@ -252,6 +191,68 @@ public class Anmeldung extends JFrame {
     } // end of public Anmeldung
 
     // Anfang Methoden
+    public void mouse_ist_schueler(int x, int y) {
+        JFrame istschueler = new JFrame(); //neues Fenster für Eingabe der Schüler-Suchdaten
+        //Attribte des JFrames
+        istschueler.setTitle("Schüleranmeldung");
+        istschueler.setResizable(false);
+        istschueler.setLayout(null);
+        istschueler.setSize(300, 300);
+        istschueler.setLocation(x+100, y+50); //zentriert das Fenster
+        istschueler.show(true);
+
+        //Komponente des Frames
+        //Vorname
+        Neues_Textfeld tfVorname = new Neues_Textfeld(25, 20, 120, 20, "Vorname");
+        istschueler.add(tfVorname);
+        //Nachname
+        Neues_Textfeld tfNachname = new Neues_Textfeld(155, 20, 120, 20, "Nachname");
+        istschueler.add(tfNachname);
+        //Geburtstag
+        Neues_Textfeld tfGeburtstag = new Neues_Textfeld(25, 50, 250, 20, "Geburtstag yyyy-mm-tt");
+        istschueler.add(tfGeburtstag);
+        //Fehlerdisplay
+        JLabel lFehler = new JLabel();
+        lFehler.setBounds(30, 110, 240, 20);
+        lFehler.setText("");
+        istschueler.add(lFehler);
+        //Button Schülerdaten finden
+        JButton bFinden = new JButton();
+        bFinden.setBounds(60, 80, 180, 20);
+        bFinden.setText("Daten importieren");
+        bFinden.setMargin(new Insets(2, 2, 2, 2));
+        bFinden.addActionListener(new ActionListener() { //Button Schüler finden
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //hier wird nun der Schüler in der Datenbank gesucht
+                String vorname = tfVorname.getText();
+                String nachname = tfNachname.getText();
+                String geburtstag = tfGeburtstag.getText();
+                if (!Hilfsklasse.string_ist_dtformat(geburtstag) || vorname == "Vorname" || vorname == "" || nachname == "" || nachname == "Nachname") {
+                    lFehler.setText("Anmeldedaten ungültig!");
+                    lFehler.show(true);
+                    return; //falls der Schüler keinen Namen oder ein falsches Geburtsdatum angegeben hat, wird dies hier ausgegeben
+                }
+                String sql = "SELECT * FROM schueler WHERE Vorname='" + vorname + "' AND Name='" + nachname + "' AND Geburtstag='" + geburtstag + "'";
+                String[][] antwort = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql); //hier wird nach dem Schüler gesucht
+                if (antwort.length != 2) {
+                    lFehler.setText("Schüler nicht gefunden! Bitte gib deine Anmeldedaten manuell ein.");
+                    lFehler.show(true);
+                    return; //falls der Schüler nicht (eindeutig) gefunden werden konnte, wird ein Fehler ausgegeben
+                }
+                //hier ist der Schüler erfolgreich gefunden worden
+                //TODO bla bla daten übernehmen
+                lFehler.setText("Deine Daten werden übernommen!");
+                lFehler.show(true);
+                tfBenutzername.setText(vorname + " " + nachname);
+                tfBenutzername.setForeground(new Color(0,0,0));
+                tfBenutzername.setFont(new Font("Serif", Font.PLAIN, 14));
+                id_nummer = antwort[1][0];
+                istschueler.dispose();
+            }
+        });
+        istschueler.add(bFinden);
+    }
 
     public void bAnmelden_ActionPerformed(ActionEvent evt) {
         String email = tfEmailoderBenutzer.getText(); //E-Mail oder Benutzername wird abgefragt
@@ -292,7 +293,7 @@ public class Anmeldung extends JFrame {
             return; //Methode wird beendet
         }
         if (!existiert_benutzer(benutzername, email)) {
-            int neue_id = generiere_neue_id("benutzer"); //falls der Benutzer noch nicht existiert, werden seine Anmeldedaten in der Datenbank gespeichert
+            int neue_id = Hilfsklasse.generiere_neue_id("benutzer"); //falls der Benutzer noch nicht existiert, werden seine Anmeldedaten in der Datenbank gespeichert
             new Registrierung(neue_id, benutzername, email, passwort, id_nummer);
             dispose();
         } else {
@@ -329,39 +330,5 @@ public class Anmeldung extends JFrame {
         lFehlerdisplay.show(true);
         lFehlerdisplay.setText(fehler);
     }
-
-    public int generiere_neue_id(String tabelle) {
-        //generiert laufende Nummer für ID (wenn es eine vorhandene ID gibt, wird die höchste ID+1 ausgegeben)
-        //falls die ID kein Integer ist, wird eine eigene ID erzeugt, welche der Anzahl der Datensätze entspricht
-        int max_id = 0;
-
-        //hier werden Tabellennamen und Anzahl der Datensätze der gesuchten Tabelle abgefragt
-        String sql = "SELECT * FROM " + tabelle;
-        String[][] ergebnis = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql);
-        String[] tabellennamen = ergebnis[0];
-        int laenge = ergebnis.length-1; //Länge der Tabelle wird später genutzt, falls die ID kein Int ist.
-
-        //hier werden die Tabellennamen durchgegangen und geguckt, ob sie das Stichwort "ID" enthalten, da einige Tabellen nicht nur "ID" als Tabellennamen haben, sondern vielmehr eine Kombination
-        for (int i=0; i<tabellennamen.length; i++) {
-            if (tabellennamen[i].contains("ID") || tabellennamen[i].contains("id") || tabellennamen[i].contains("Id")) {
-                sql = "SELECT MAX(" + tabellennamen[i] + ") FROM " + tabelle;
-                ergebnis = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql);
-                if (ergebnis.length > 1) {
-                    try { //try-catch wird benutzt, um zu gucken, ob es sich wirklich um einen Int handelt (Integer.parseInt wirft eine Fehlermeldung anderenfalls)
-                        max_id = Integer.parseInt(ergebnis[1][0]);
-                    }
-                    catch (Exception e) {
-                        if (zeige_warnungen_an) System.out.println("Warning: " + e);
-                        max_id = laenge; //falls es keinen Int als ID gibt, wird provisorisch die Länge der Tabelle genommen
-                    }
-                }
-                else {
-                    max_id = -1; //falls die Datenbank leer ist, wird die erste ID 0 sein. Da am Ende +1 gerechnet wird, muss hier die ID -1 sein
-                }
-                break;
-            }
-        }
-        return max_id+1;
-    };
     // Ende Methoden
 } // end of class Anmeldung
