@@ -11,6 +11,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Hilfsklasse {
+    /*
+    In dieser Klasse werden nützliche Methoden und Konstanten gespeichert, die Global (im ganzen Programm) benutzt werden
+     */
     public static String[] faecher = {"Mathematik", "Physik", "Informatik", "Chemie", "Biologie", "Politik", "Geschichte", "Erdkunde", "Religion", "Deutsch", "Englisch", "Latein", "Französisch", "Spanisch", "Kunst", "Musik", "Sport"};
     public static String[] augenfarben = {"Blau", "Grün", "Braun"};
     public static String[] haarfarben = {"Braun", "Blond", "Rot", "Bunt", "Blau", "Grün", "Immer anders"};
@@ -36,9 +39,12 @@ public class Hilfsklasse {
     }
 
     public static void markiere_label(Container cp, String name, Color farbe) {
+        /*
+        findet und markiert Label, gefiltert nach Name. Dazu müssen zunächst alle Label gefunden werden, und dann nach dem Namen geguckt werden.
+         */
         Component[] k = cp.getComponents();
         for (int i = 0; i < k.length; i++) {
-            if (Arrays.stream(k).collect(Collectors.toList()).get(i).getName() == name && Arrays.stream(k).collect(Collectors.toList()).get(i) instanceof JLabel) {
+            if (Arrays.stream(k).collect(Collectors.toList()).get(i).getName() == name && Arrays.stream(k).collect(Collectors.toList()).get(i) instanceof JLabel) { //Da .getComponents() ein Array zurückgibt, wir aber zum Verarbeiten eine Liste benötigen, müssen sie hier umgewandelt werden
                 ((JLabel) Arrays.stream(k).collect(Collectors.toList()).get(i)).setBorder(new LineBorder(farbe));
             }
         }
@@ -46,7 +52,7 @@ public class Hilfsklasse {
 
     public static String fachgebiet(String fach) {//gibt Fachgebiet (Profil), in welches das Fach fällt aus
         for (int i = 0; i < faecher.length; i++) {
-            if (fach.equals(faecher[i])) {
+            if (fach.equals(faecher[i])) { //es wird geguckt, an welcher Stelle das Fach ist, da das Array der Fächer sortiert nach Fachgebieten ist
                 if (i<5) return profile[0];
                 else if (i<9) return profile[1];
                 else if (i<16) return profile[2];
@@ -57,12 +63,14 @@ public class Hilfsklasse {
     }
 
     public static int string_zu_bmi(String figur) {
+        //hier kann durch Eingabe der Figur der BMI herausgefunden werden
         if (figur.equals("Sportlich")) return 20;
         else if (figur.equals("Gesund")) return 25;
         return 100;
     }
 
     public static Date geburtstag_aus_datum(String datum) {
+        //um mit Daten zu arbeiten, muss der String zu einem Date-Objekt umgewandelt werden
         SimpleDateFormat datumsformat = new SimpleDateFormat("yyyy-MM-dd");
         Date geburtstag = null;
         try {
@@ -74,7 +82,7 @@ public class Hilfsklasse {
     }
 
     public static int altersunterschied(String geburtstag_1, String geburtstag_2) {
-        //Fremdcode inspiration bei https://www.baeldung.com/java-date-difference
+        //gibt Altersunterschied wieder, Fremdcode inspiration bei https://www.baeldung.com/java-date-difference
         return (int) TimeUnit.DAYS.convert(Math.abs(geburtstag_aus_datum(geburtstag_1).getTime() - geburtstag_aus_datum(geburtstag_2).getTime()), TimeUnit.MILLISECONDS);
     }
 
@@ -120,8 +128,12 @@ public class Hilfsklasse {
     }
 
     public static String benutzerdaten_als_text(String id, boolean ist_schueler) {
+        /*
+        In dieser Methode werden die Partnerdaten basierend auf der ID uniformiert in einen einheitlichen Text gebracht, welcher dann angezeigt werden kann.
+         */
         String ausgangstext = "";
         if (ist_schueler) {
+            //der Schüler wird aus der Datenbank abgerufen und seine Daten, wie z.B. Alter und Größe werden ausgelesen
             String sql = "SELECT * FROM schueler WHERE ID_Nummer = '" + id + "'";
             String[][] ergebnis = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql);
             String alter = Period.between(Hilfsklasse.geburtstag_aus_datum(ergebnis[1][3]).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()).getYears() + "";
@@ -130,13 +142,14 @@ public class Hilfsklasse {
             String buchstabe = "";
             String geschlecht = "";
             String pronomen = "";
-            switch (ergebnis[1][6]) {
+            switch (ergebnis[1][6]) { //falls es sich um einen Mann oder eine Frau handelt, müssen im Text einige Sachen angepasst werden
                 case "m": pronomen = "Er"; geschlecht = "mann"; break;
                 case "w": pronomen = "Sie"; geschlecht = "frau"; buchstabe = "e"; break;
             }
             ausgangstext = "Dein" + buchstabe + " Traum" + geschlecht + " ist " + ergebnis[1][2] + " " + ergebnis[1][1] + ".\n" + pronomen + " ist " + alter + " Jahre alt und " + groesse + "m groß!";
         }
         else {
+            //gleiches wie oben passiert hier mit den Benutzern, wobei hier nur die Stellen der Daten anders sind
             String sql = "SELECT * FROM benutzer WHERE ID = '" + id + "'";
             String[][] ergebnis = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql);
             String alter = Period.between(Hilfsklasse.geburtstag_aus_datum(ergebnis[1][6]).toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), LocalDate.now()).getYears() + "";

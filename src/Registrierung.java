@@ -50,7 +50,10 @@ public class Registrierung extends JFrame {
         Container cp = getContentPane();
         cp.setLayout(null);
         if (!arg_id_nummer.equals("NULL")) {
-            //Hier beginnt die Abfrage, falls es sich bei der Registrierung um eine Schülerregistrierung handelt
+            /*
+            Hier beginnt die Abfrage, falls es sich bei der Registrierung um eine Schülerregistrierung handelt.
+            Des Weiteren werden hier die Schülerdaten in das Registrierformular eingefügt.
+             */
             String sql = "SELECT Groesse, Geburtstag, Geschlecht, Lieblingsfach, Augenfarbe, Haarfarbe FROM schueler WHERE ID_Nummer = '" + arg_id_nummer + "'";
             String[] ergebnis = Benutzeroberflaeche.myDBManager.sqlAnfrageAusfuehren(sql)[1];
             tfGroesse.setText(Double.parseDouble(ergebnis[0])*100 + " ");
@@ -109,6 +112,9 @@ public class Registrierung extends JFrame {
     }
 
     public void bRegistrieren_ActionPerformed(ActionEvent evt) {
+        /*
+        Hier werden all die Registrierdaten des Formulares ausgelesen und auf ihre Richtigkeit überprüft.
+         */
         setze_border_zurueck();
         if (!registrierdaten_korrekt()) return;
         double groesse = Double.parseDouble(tfGroesse.getText())/100;
@@ -124,6 +130,7 @@ public class Registrierung extends JFrame {
         String haarfarbe = cbHaarfarbe.getSelectedItem().toString();
         String figur = cbFigur.getSelectedItem().toString();
         String id = neue_id + "";
+        //ab hier werden dann diese Registrierdaten samt ID und Benutzername in die Datenbank eingefügt
         String sql = "INSERT INTO benutzer VALUES (" + neue_id + ", '" + benutzername + "', '" + email + "', '" + passwort + "', ";
         if (id_nummer == "NULL") {
             sql += id_nummer + "";
@@ -135,7 +142,7 @@ public class Registrierung extends JFrame {
         Benutzeroberflaeche.myDBManager.datensatzEinfuegen(sql); //Datenbank wird aktualisiert
         //Registrierung abgeschlossen
         dispose();
-        Benutzeroberflaeche ui = new Benutzeroberflaeche();
+        Benutzeroberflaeche ui = new Benutzeroberflaeche(); //Registrierung war erfolgreich und der Benutzer kann anfangen zu Daten
         ui.show(true);
         ui.angemeldet(ui, id);
     }
@@ -149,6 +156,9 @@ public class Registrierung extends JFrame {
     }
 
     public boolean registrierdaten_korrekt() {
+        /*
+        Hier wird überprüft, ob die Registrierdaten korrekt eingegeben wurde, also ob z.B. das Datum das Format yyyy-mm-dd hat.
+         */
         boolean korrekt = true;
         if (!Hilfsklasse.string_ist_dtformat(tfGeburtstag.getText())) {//falls das Datum falsch eingegeben wurde, oder die Größe keine Zahl ist
             tfGeburtstag.setBorder(new LineBorder(Color.RED));

@@ -241,7 +241,6 @@ public class Anmeldung extends JFrame {
                     return; //falls der Schüler nicht (eindeutig) gefunden werden konnte, wird ein Fehler ausgegeben
                 }
                 //hier ist der Schüler erfolgreich gefunden worden
-                //TODO bla bla daten übernehmen
                 lFehler.setText("Deine Daten werden übernommen!");
                 lFehler.show(true);
                 tfBenutzername.setText(vorname + " " + nachname);
@@ -313,9 +312,9 @@ public class Anmeldung extends JFrame {
         //hier wird das passwort mit MD5 verschlüsselt, hierbei handelt es sich weder um eine sichere Verschlüsselung, noch ist es überhaupt eine "richtige" Verschlüsselung (es "scheint" nur so)
         String encryptedpassword = "";
         try {
-            MessageDigest m = MessageDigest.getInstance("MD5");
-            m.update(passwort.getBytes()); //MD5 gibt Bytes zurück
-            byte[] bytes = m.digest(); //Bytes werden ausgelesen
+            MessageDigest md = MessageDigest.getInstance("MD5"); //Hashfunktion MD5 wird geladen
+            md.update(passwort.getBytes()); //MD5 gibt Bytes zurück
+            byte[] bytes = md.digest(); //Bytes werden ausgelesen
             for(int i=0; i< bytes.length ;i++)
             {
                 encryptedpassword += Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1); //diese Bytes müssen hier zu lesbaren Buchstaben umgewandelt werden

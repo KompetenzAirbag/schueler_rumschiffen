@@ -13,7 +13,7 @@ public class Neues_Textfeld extends JTextField {
         setFont(new Font("Serif", Font.ITALIC, 14));
         addFocusListener(new FocusListener() {
             @Override
-            public void focusGained(FocusEvent e) {
+            public void focusGained(FocusEvent e) { //falls das Textfeld im Fokus ist und das Textfeld den blanken Text anzeigt, wird dieser gelöscht
                 if (getText().equals(leer)) {
                     setText("");
                     setForeground(new Color(0,0,0));
@@ -21,7 +21,7 @@ public class Neues_Textfeld extends JTextField {
                 }
             }
             @Override
-            public void focusLost(FocusEvent e) {
+            public void focusLost(FocusEvent e) { //falls das Textfeld nicht mehr im Fokus ist, wird der blanke Text wieder eingefügt; ein Löschen eingegebener Daten wird verhindert durch Überprüfung, ob das Feld leer ist.
                 if (getText().equals("")) {
                     setText(leer);
                     setForeground(new Color(128,128,128));
